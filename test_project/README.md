@@ -40,3 +40,7 @@ For the visualization aspect, I implemented Plotly through `plotly.express` and 
 Testing became a major focus as the program expanded, especially due to the fact that financial calculations and optimization outputs are highly sensitive to small implementation errors. I created a dedicated `test_folder` containing separate test modules for each project component. The application uses both pytest and unittest, along with extensive mocking through `unittest.mock.patch`. I also implemented the responses library to mock API responses and avoid real HTTP requests during testing. Many functions were refactored specifically to improve testability, particularly within the optimization logic. The final system contains over 60 unit tests spanning data ingestion, API handling, optimization logic, visualization, and portfolio calculations.
 
 Overall, this final project became substantially larger than I originally anticipated. The idea evolved into a modular financial analytics system involving API integration, persistent storage, data alignment, optimization, Monte Carlo simulation, visualization, and extensive testing. If I continue to expand the project in the future, I would likely implement a graphical user interface, transaction costs, short-selling constraints, alternative optimization objectives, and more advanced financial metrics.
+
+
+
+
