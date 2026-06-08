@@ -1,42 +1,147 @@
-# Efficient Frontier & Portfolio Optimization Tool
-#### Video Demo: <>
-#### Description:
-This project allows a user to input any valid stock tickers, and retrieve the historical data necessary to construct and visualize an Efficient Frontier. The program performs data collection, storage, portfolio analysis, optimization, and visualization while attempting to mimic some of the workflow involved in quantitative portfolio construction.
+# Efficient Frontier and Portfolio Optimization 
+Build an visualize optimized investment portfolios using Modern Portfolio Theory, Monte Carlo simulation, and convex optimization.
+## Features 
+- Retrieves historical stock and Treasury yield data from Alpha Vantage 
+- Caches data locally to reduce API calls 
+- Automatically refreshes outdated market data
+- Simulates thousands of portfolios using Monte Carlo Methods
+- Constructs an Optimized Efficient Frontier using CVXPY
+- Calculates annualized returns, volatility, and Sharpe ratios 
+- Generates interactive Plotly visualizations
+- Provides mock data for development and testing 
+- Includes 60+ automated unit tests
+## Overview 
+This project allows a user to input any valid stock tickers, and retrieve the historical data necessary to construct and visualize an Efficient Frontier. The program performs this by building and visualizing optimized investment portfolios using Modern Portfolio Theory, Monte Carlo Simulations, and convex optimization.
 
 The final output is an interactive visualization containing thousands of simulated portfolios alongside the optimized Efficient Frontier.
+## Tech Stack 
 
-This project originally began as a much smaller idea focused on portfolio returns and visualization, but it expanded as I encountered real-world issues related to financial data retrieval, API rate limits, data alignment, optimization, and testing. The project evolved into a modular system separated across multiple files constructed to make handling these issues easier. It has been intentionally separated into modules responsible for data ingestion, API handling, portfolio analytics, visualization, and testing to improve maintainability and readability.
+- Python
+- Pandas
+- NumPy
+- CVXPY
+- Plotly
+- Alpha Vantage API
+- Pytest
+- unittest
+- responses
+## Project Structure 
+### Architecture
+```
+User Input
+    ↓
+CSV Cache Check
+    ↓
+Missing/Outdated Tickers? 
+    ↓
+Alpha Vantage API 
+    ↓
+Data Cleaning
+    ↓
+Data Alignment
+    ↓
+Return Calculations 
+    ↓
+Monte Carlo Simulation
+    ↓
+CVXPY Optimization
+    ↓
+Plotly Visualization
+```
+### File Structure 
+```
+Project
+    ├── main.py             # App entry
+    ├── data.py             # Data ingestion & storage
+    ├── api.py              # Alpha Vantage integration
+    ├── fake_data.py        # Mock data provider 
+    ├── portfolio.py        # Portfolio calculations & optimization
+    ├── graphs.py           # Plotly vizualization
+    ├── requirements.txt
+    └── test_folder
+        ├── __init__.py
+        ├── test_api.py
+        ├── test_data.py
+        ├── test_graphs.py
+        ├── test_main.py
+        └── test_portfolio.py
+```
+## Installation
+To install all packages needed to run this program run
+`pip install -r requirements.txt`
 
-The program begins in `main.py`, where the user is prompted to continuously input stock tickers until raising an EOFError. The function `get_tickers` collects these tickers into a list and passes them into the `RawData()` class located in data.py.
+Also, retrieve an API key from: [https://www.alphavantage.co/support/#api-key].
+ 
+Store your API key as this evironment variable 
+`export STOCK_API_KEY1="Your_api_key_here"`
 
-The `RawData` class handles nearly all data wrangling and storage operations before portfolio calculations occur. One of the first problems I encountered while developing this system was API rate limiting through AlphaVantage. Repeatedly requesting data during development caused the API to halt requests very quickly, especially while debugging and testing. To solve this, I integrated CSV persistence so that previously retrieved stock data could be reused instead of requesting data every time this tool runs. Later in development, I encountered a similar issue when retrieving the risk free rate.
+Run program with:
+`python main.py`
+## Usage 
+Enter tickers one at a time: 
+```
+Ticker: AAPL
+Ticker: TSLA
+Ticker: AMD
+Ticker: SPY
+```
 
-The function `get_csv()` checks whether a local `data.csv` already exists. If it does, pandas is used to read the CSV into a DataFrame, set the "Date" column as the index, and convert the index into datetime format. I also implement `drop_unwanted()`, which removes ticker columns from the CSV that were not requested by the user during the current execution of this tool. If the CSV file does not exist, the logic simply returns an empty DataFrame.
+Press **Ctrl + d** when finished entering tickers.
+> This will raise an `EOFError` that will be caught as a signal to continue with the program.
 
-After retrieving the existing data, the pipeline determines whether any tickers need updating through `update_tickers()`. This function compares the most recent stored data against the current date and determines whether a ticker should be refreshed from the API, ultimately returning a list of tickers that require updated data. I added a few helper functions such as `extract_month`, `get_todays_date`, and `get_months` to handle date parsings and comparisons. A ticker is added to the update list if one of three conditions is met: the ticker does not exist in the CSV, the stored data is outdated, or the ticker column exists but contains missing data. If all requested tickers are already current, the program skips unnecessary API calls entirely.
+The application will then: 
 
-The next stage of the application handles API retrieval and data wrangling. The class `CallApi`, located in `api.py`, retrieves monthly stock data from AlphaVantage. The API module also contains logic for retrieving Treasury yield data, which is used as the risk-free rate in Sharpe ratio calculations.
+1. Check for cached data
+2. Retrieve missing or outdated market data 
+3. Align historical values
+4. Calculate annual financial metrics and descriptive statistics
+5. Generate Monte Carlo Portfolios 
+6. Construct the Efficient Frontier 
+7. Display an interactive Plotly visualization
 
-If the API returns an invalid request or a rate-limit response, the application raises a `ValueError` and exits. During testing, however, I developed a separate `FakeData` class that returns deterministic mock financial data. Both CallApi and FakeData follow the same informal interface structure, allowing the rest of the system to treat them identically. This design decision made testing substantially easier and prevented unnecessary API requests during development.
+### Customization
+The criteria used to determine outdated market data can easily be modified to retain data for longer periods. 
 
-One interesting aspect of the project involved aligning financial data across multiple assets. Different stocks IPO at different times, meaning each ticker may contain a different number of historical observations. The lengths of this data also did not match the data already stored in the CSV file. To solve this issue, I designed logic that identifies the common dates shared across multiple tickers using set intersections. Functions such as `dates_of_multiple_tickers()`,`common_dates()`, and `merge_data()` work together to ensure all assets align on identical dates before any portfolio calculations occur.
+Similarly, several parameters in the project can be adjusted to analyze assets using different assumptions while preserving overall workflow. 
+### Example Output 
 
-Once the dates are aligned, `to_df()` converts the parsed dictionary data into a properly indexed pandas DataFrame. If prior CSV data exists, `update_df` merged the old and newly retrieved data together while maintaining only the dates common to both DataFrames. This process ensures consistency across the entire portfolio dataset before analysis begins.
+![Efficient Frontier Visualization using AAPL, TSLA, AMD, MSFT, and SPY as inputs](efficient_frontier_example.png)
 
-The portfolio analysis portion of the system mainly resides in `portfolio.py`. The first step is calculating asset returns using pandas `pct_change()` within `calc_returns()`. Additional functions annualize returns and volatility metrics before calculating Sharpe ratios.
+## Testing 
+**The project contains over 60 automated unit tests covering:**
 
-To simulate feasible portfolios, I introduced a Monte Carlo simulation within `random_ports()`. This simulation generated thousands of feasible portfolio allocations using NumPy's Dirichlet distribution to create random portfolio weights that must always sum to one. For each simulated portfolio, the model calculated annualized return, volatility, and Sharpe ratio.
+- Data ingestion
+- CSV persistence
+- API handling
+- Portfolio calculations
+- Optimization Logic
+- Visualization
 
-The most technically challenging component of the optimizer was constructing the Efficient Frontier itself. The function `optimal_port()` uses the `cvxpy` optimization library to solve a constrained convex mean-variance optimization problem. Originally, this function existed as one extremely large block of code. However, while attempting to properly unit test the optimizer, I realized the function needed to be refactored into multiple helper functions to improve readability and maintainability.
+**Tools:**
 
-The optimization process initially constructs expected return and covariance matrices from the historical returns data. Portfolio weights are represented as optimization variables constrained by two primary conditions: the total portfolio weights must sum to one, and all weights must remain nonnegative to represent a fully invested, long-only portfolio.
+- pytest
+- unittest
+- unittest.mock
+- responses
+## Development Notes 
+To minimize API rate limits during development and testing, the project includes a `FakeData` class that mirrors the interface used by `CallApi`.
 
-Using these constraints, the optimizer first solves for the minimum variance portfolio. The model then iteratively solves additional optimization problems across a range of target returns, minimizing variance at each target return level. The result is a smooth Efficient Frontier representing the optimal tradeoff between risk and return.
+Since both classes expose the same methods, they can be substituted without modifying downstream code.
 
-The Efficient Frontier represents the set of portfolios that maximize expected return for a given level of risk.
+`missing_t = FakeData(tickers_to_upd)`
 
-For the visualization aspect, I implemented Plotly through `plotly.express` and `plotly.graph_objects`. The graph overlays the simulated Monte Carlo portfolios with the optimized Efficient Frontier curve. I ultimately chose a dark visual theme because it made the frontier line and Sharpe ratio coloring significantly easier to interpret while displaying thousands of points simultaneously.
+or 
 
-Testing became a major focus as the program expanded, especially due to the fact that financial calculations and optimization outputs are highly sensitive to small implementation errors. I created a dedicated `test_folder` containing separate test modules for each project component. The application uses both pytest and unittest, along with extensive mocking through `unittest.mock.patch`. I also implemented the responses library to mock API responses and avoid real HTTP requests during testing. Many functions were refactored specifically to improve testability, particularly within the optimization logic. The final system contains over 60 unit tests spanning data ingestion, API handling, optimization logic, visualization, and portfolio calculations.
+`missing_t = CallApi(tickers_to_upd)`
+## Feedback and Contributions 
 
-Overall, this final project became substantially larger than I originally anticipated. The idea evolved into a modular financial analytics system involving API integration, persistent storage, data alignment, optimization, Monte Carlo simulation, visualization, and extensive testing. If I continue to expand the project in the future, I would likely implement a graphical user interface, transaction costs, short-selling constraints, alternative optimization objectives, and more advanced financial metrics.
+Feedback, suggestions, and criticism are always welcome.
+
+If you find a bug, have any ideas for new features, or want to share a better way to approach an implementation, feel free to open an issue or start a discussion. I am really always interested in learning from different perspectives. 
+
+If you would like to contribute please submit a pull request after forking the repository and making your changes. Please include a clear description of the proposed improvement(s). 
+
+## About 
+I'm Jalen Buffert and I developed this tool to better understand how to build dynamic and maintainable systems. With a Bachelor's degree in Economics, I have already had exposure to financial data analysis. Since graduation, my interest in software development has deepened. I enjoy building software that makes exploring financial concepts and quantitative methods more accessible. 
+
+This project originally began as an idea focused on portfolio returns and visualization, but it expanded as I encountered real-world issues related to financial data retrieval, API rate limits, data alignment, optimization, and testing. The project evolved into a modular system separated across multiple files constructed to make handling these issues easier. The application has been intentionally separated into modules to improve maintainability and readability.
