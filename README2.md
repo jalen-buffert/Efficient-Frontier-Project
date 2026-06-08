@@ -30,5 +30,4 @@ Shares informal interface structure with fake_dat.py. Therefore, it becomes simp
 This 
 ## About 
 I'm Jalen Buffert and I developed this tool to better understand how to build dynamic and maintainable systems. With an Bachelors in Economics, I have already had exposure to financial data analysis. Since graduation, my interest in software development has deepened. Now, I enjoy building things that make exploring my interests easier. 
-
 ## Feedback and Contributions 
