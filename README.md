@@ -1,5 +1,5 @@
 # Efficient Frontier and Portfolio Optimization 
-Build an visualize optimized investment portfolios using Modern Portfolio Theory, Monte Carlo simulation, and convex optimization.
+Python application for quantitative portfolio optimization using Modern Portfolio Theory, Monte Carlo simulation, and convex optimization (CVXPY).
 ## Features 
 - Retrieves historical stock and Treasury yield data from Alpha Vantage 
 - Caches data locally to reduce API calls 
