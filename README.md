@@ -56,7 +56,7 @@ Project
     ├── api.py              # Alpha Vantage integration
     ├── fake_data.py        # Mock data provider 
     ├── portfolio.py        # Portfolio calculations & optimization
-    ├── graphs.py           # Plotly vizualization
+    ├── graphs.py           # Plotly visualization
     ├── requirements.txt
     └── test_folder
         ├── __init__.py
@@ -72,7 +72,7 @@ To install all packages needed to run this program run
 
 Also, retrieve an API key from: [https://www.alphavantage.co/support/#api-key].
  
-Store your API key as this evironment variable 
+Store your API key as this environment variable 
 `export STOCK_API_KEY1="Your_api_key_here"`
 
 Run program with:
@@ -117,7 +117,7 @@ Similarly, several parameters in the project can be adjusted to analyze assets u
 - Optimization Logic
 - Visualization
 
-**Tools:**
+## Tools:
 
 - pytest
 - unittest
